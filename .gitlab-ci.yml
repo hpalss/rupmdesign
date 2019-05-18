@@ -1,0 +1,23 @@
+image: abdulmanan7/webos
+
+
+stages:
+  - deploy
+
+deploy_staging:
+  stage: deploy
+  script: # Modify the commands below to build your repository.
+   
+    # - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    # - ssh-add <(echo "$SSH_PRIVATE_KEY" | base64 --decode)
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - dep deploy
+
+  environment:
+    name: staging
+    url: http://genieos.io/rupm
+  only:
+  - staging
